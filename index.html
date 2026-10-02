@@ -40,7 +40,7 @@ async function init() {
 
 btn.addEventListener('click', async () => {
   btn.disabled = true;
-  statusEl.textContent = 'Отправляем max_subscribe…';
+  statusEl.textContent = 'Отправляем subscribe…';
   try {
     const params = new URLSearchParams(location.search);
     const vkUserId = params.get('vk_user_id') || '';
@@ -52,7 +52,7 @@ btn.addEventListener('click', async () => {
     const result = await vkBridge.send('VKWebAppTrackEvent', payload);
     statusEl.textContent =
       'Событие отправлено.\n' +
-      'event_name: max_subscribe\n' +
+      'event_name: subscribe\n' +
       (vkUserId ? 'VK user_id: ' + vkUserId + '\n' : '') +
       'Ответ VK Bridge: ' + JSON.stringify(result);
   } catch (e) {

@@ -45,7 +45,7 @@ btn.addEventListener('click', async () => {
     const params = new URLSearchParams(location.search);
     const vkUserId = params.get('vk_user_id') || '';
     const payload = {
-      event_name: 'max_subscribe'
+      event_name: 'subscribe'
     };
     if (vkUserId) payload.custom_user_id = vkUserId;
 

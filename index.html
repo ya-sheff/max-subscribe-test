@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MAX Subscribe Test</title>
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f3f5f7;color:#111}
+    .wrap{max-width:560px;margin:0 auto;padding:28px 18px}
+    .card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+    h1{font-size:26px;margin:0 0 10px}.muted{color:#666;line-height:1.45}
+    button{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;background:#2688eb;color:#fff;cursor:pointer;margin-top:18px}
+    button:disabled{opacity:.55}.status{margin-top:18px;padding:14px;border-radius:12px;background:#f3f5f7;white-space:pre-wrap;word-break:break-word}
+    .small{font-size:13px;color:#777;margin-top:16px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>MAX Subscribe Test</h1>
+    <div class="muted">Тестовое VK Mini App. Кнопка ниже отправляет кастомное событие <b>max_subscribe</b>.</div>
+    <button id="send">Тест: подтвердить подписку</button>
+    <div id="status" class="status">Инициализация VK Mini App…</div>
+    <div class="small">App ID: 54801497. Это тестовое событие — реальную проверку подписки MAX подключим после проверки аналитики.</div>
+  </div>
+</div>
+<script>
+const statusEl = document.getElementById('status');
+const btn = document.getElementById('send');
+
+async function init() {
+  try {
+    await vkBridge.send('VKWebAppInit');
+    statusEl.textContent = 'VK Mini App инициализировано. Можно отправить тестовое событие.';
+  } catch (e) {
+    statusEl.textContent = 'Ошибка инициализации: ' + (e && e.message ? e.message : JSON.stringify(e));
+  }
+}
+
+btn.addEventListener('click', async () => {
+  btn.disabled = true;
+  statusEl.textContent = 'Отправляем max_subscribe…';
+  try {
+    const params = new URLSearchParams(location.search);
+    const vkUserId = params.get('vk_user_id') || '';
+    const payload = {
+      event_name: 'max_subscribe'
+    };
+    if (vkUserId) payload.custom_user_id = vkUserId;
+
+    const result = await vkBridge.send('VKWebAppTrackEvent', payload);
+    statusEl.textContent =
+      'Событие отправлено.\n' +
+      'event_name: max_subscribe\n' +
+      (vkUserId ? 'VK user_id: ' + vkUserId + '\n' : '') +
+      'Ответ VK Bridge: ' + JSON.stringify(result);
+  } catch (e) {
+    statusEl.textContent = 'Ошибка отправки события:\n' + (e && e.message ? e.message : JSON.stringify(e));
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+init();
+</script>
+</body>
+</html>
